@@ -16,90 +16,95 @@ interface ConfigureProjectPageProps {
 }
 
 export default function ConfigureProjectPage({ params }: ConfigureProjectPageProps) {
-  const [envVars, setEnvVars] = useState({
-    // Secrets
-    POSTGRES_PASSWORD: 'your-super-secret-and-long-postgres-password',
-    JWT_SECRET: 'your-super-secret-jwt-token-with-at-least-32-characters-long',
-    ANON_KEY: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyAgCiAgICAicm9sZSI6ICJhbm9uIiwKICAgICJpc3MiOiAic3VwYWJhc2UtZGVtbyIsCiAgICAiaWF0IjogMTY0MTc2OTIwMCwKICAgICJleHAiOiAxNzk5NTM1NjAwCn0.dc_X5iR_VP_qT0zsiyj_I_OZ2T9FtRU2BBNWN8Bu4GE',
-    SERVICE_ROLE_KEY: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyAgCiAgICAicm9sZSI6ICJzZXJ2aWNlX3JvbGUiLAogICAgImlzcyI6ICJzdXBhYmFzZS1kZW1vIiwKICAgICJpYXQiOiAxNjQxNzY5MjAwLAogICAgImV4cCI6IDE3OTk1MzU2MDAKfQ.DaYlNEoUrrEn2Ig7tqibS-PHK5vgusbcbo7X36XVt4Q',
-    DASHBOARD_USERNAME: 'supabase',
-    DASHBOARD_PASSWORD: 'this_password_is_insecure_and_should_be_updated',
-    SECRET_KEY_BASE: 'UpNVntn3cDxHJpq99YMc1T1AQgQpc8kfYTuRgBiYa15BLrx8etQoXz3gZv1/u2oq',
-    VAULT_ENC_KEY: 'your-encryption-key-32-chars-min',
+  const [envVars, setEnvVars] = useState(() => {
+    const timestamp = Date.now()
+    const basePort = 8000 + (timestamp % 10000)
     
-    // Database
-    POSTGRES_HOST: 'db',
-    POSTGRES_DB: 'postgres',
-    POSTGRES_PORT: '5432',
-    
-    // Supavisor
-    POOLER_PROXY_PORT_TRANSACTION: '6543',
-    POOLER_DEFAULT_POOL_SIZE: '20',
-    POOLER_MAX_CLIENT_CONN: '100',
-    POOLER_TENANT_ID: 'your-tenant-id',
-    POOLER_DB_POOL_SIZE: '5',
-    
-    // Kong
-    KONG_HTTP_PORT: '8000',
-    KONG_HTTPS_PORT: '8443',
-    
-    // Analytics
-    ANALYTICS_PORT: '4000',
-    
-    // PostgREST
-    PGRST_DB_SCHEMAS: 'public,storage,graphql_public',
-    
-    // Auth
-    SITE_URL: 'http://localhost:3000',
-    ADDITIONAL_REDIRECT_URLS: '',
-    JWT_EXPIRY: '3600',
-    DISABLE_SIGNUP: 'false',
-    API_EXTERNAL_URL: 'http://localhost:8000',
-    
-    // Mailer
-    MAILER_URLPATHS_CONFIRMATION: '/auth/v1/verify',
-    MAILER_URLPATHS_INVITE: '/auth/v1/verify',
-    MAILER_URLPATHS_RECOVERY: '/auth/v1/verify',
-    MAILER_URLPATHS_EMAIL_CHANGE: '/auth/v1/verify',
-    
-    // Email auth
-    ENABLE_EMAIL_SIGNUP: 'true',
-    ENABLE_EMAIL_AUTOCONFIRM: 'false',
-    SMTP_ADMIN_EMAIL: 'admin@example.com',
-    SMTP_HOST: 'supabase-mail',
-    SMTP_PORT: '2500',
-    SMTP_USER: 'fake_mail_user',
-    SMTP_PASS: 'fake_mail_password',
-    SMTP_SENDER_NAME: 'fake_sender',
-    ENABLE_ANONYMOUS_USERS: 'false',
-    
-    // Phone auth
-    ENABLE_PHONE_SIGNUP: 'true',
-    ENABLE_PHONE_AUTOCONFIRM: 'true',
-    
-    // Studio
-    STUDIO_DEFAULT_ORGANIZATION: 'Default Organization',
-    STUDIO_DEFAULT_PROJECT: 'Default Project',
-    STUDIO_PORT: '3000',
-    SUPABASE_PUBLIC_URL: 'http://localhost:8000',
-    
-    // ImgProxy
-    IMGPROXY_ENABLE_WEBP_DETECTION: 'true',
-    
-    // OpenAI
-    OPENAI_API_KEY: '',
-    
-    // Functions
-    FUNCTIONS_VERIFY_JWT: 'false',
-    
-    // Logs
-    LOGFLARE_PUBLIC_ACCESS_TOKEN: 'your-super-secret-and-long-logflare-key-public',
-    LOGFLARE_PRIVATE_ACCESS_TOKEN: 'your-super-secret-and-long-logflare-key-private',
-    DOCKER_SOCKET_LOCATION: '/var/run/docker.sock',
-    
-    // Google Cloud
-    GOOGLE_PROJECT_ID: 'GOOGLE_PROJECT_ID',
-    GOOGLE_PROJECT_NUMBER: 'GOOGLE_PROJECT_NUMBER'
+    return {
+      // Secrets
+      POSTGRES_PASSWORD: 'your-super-secret-and-long-postgres-password',
+      JWT_SECRET: 'your-super-secret-jwt-token-with-at-least-32-characters-long',
+      ANON_KEY: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyAgCiAgICAicm9sZSI6ICJhbm9uIiwKICAgICJpc3MiOiAic3VwYWJhc2UtZGVtbyIsCiAgICAiaWF0IjogMTY0MTc2OTIwMCwKICAgICJleHAiOiAxNzk5NTM1NjAwCn0.dc_X5iR_VP_qT0zsiyj_I_OZ2T9FtRU2BBNWN8Bu4GE',
+      SERVICE_ROLE_KEY: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyAgCiAgICAicm9sZSI6ICJzZXJ2aWNlX3JvbGUiLAogICAgImlzcyI6ICJzdXBhYmFzZS1kZW1vIiwKICAgICJpYXQiOiAxNjQxNzY5MjAwLAogICAgImV4cCI6IDE3OTk1MzU2MDAKfQ.DaYlNEoUrrEn2Ig7tqibS-PHK5vgusbcbo7X36XVt4Q',
+      DASHBOARD_USERNAME: 'supabase',
+      DASHBOARD_PASSWORD: 'this_password_is_insecure_and_should_be_updated',
+      SECRET_KEY_BASE: 'UpNVntn3cDxHJpq99YMc1T1AQgQpc8kfYTuRgBiYa15BLrx8etQoXz3gZv1/u2oq',
+      VAULT_ENC_KEY: 'your-encryption-key-32-chars-min',
+      
+      // Database
+      POSTGRES_HOST: 'db',
+      POSTGRES_DB: 'postgres',
+      POSTGRES_PORT: (basePort + 2000).toString(),
+      
+      // Supavisor
+      POOLER_PROXY_PORT_TRANSACTION: (basePort + 3000).toString(),
+      POOLER_DEFAULT_POOL_SIZE: '20',
+      POOLER_MAX_CLIENT_CONN: '100',
+      POOLER_TENANT_ID: 'your-tenant-id',
+      POOLER_DB_POOL_SIZE: '5',
+      
+      // Kong
+      KONG_HTTP_PORT: basePort.toString(),
+      KONG_HTTPS_PORT: (basePort + 443).toString(),
+      
+      // Analytics
+      ANALYTICS_PORT: (basePort + 1000).toString(),
+      
+      // PostgREST
+      PGRST_DB_SCHEMAS: 'public,storage,graphql_public',
+      
+      // Auth
+      SITE_URL: `http://localhost:${basePort + 100}`,
+      ADDITIONAL_REDIRECT_URLS: '',
+      JWT_EXPIRY: '3600',
+      DISABLE_SIGNUP: 'false',
+      API_EXTERNAL_URL: `http://localhost:${basePort}`,
+      
+      // Mailer
+      MAILER_URLPATHS_CONFIRMATION: '/auth/v1/verify',
+      MAILER_URLPATHS_INVITE: '/auth/v1/verify',
+      MAILER_URLPATHS_RECOVERY: '/auth/v1/verify',
+      MAILER_URLPATHS_EMAIL_CHANGE: '/auth/v1/verify',
+      
+      // Email auth
+      ENABLE_EMAIL_SIGNUP: 'true',
+      ENABLE_EMAIL_AUTOCONFIRM: 'false',
+      SMTP_ADMIN_EMAIL: 'admin@example.com',
+      SMTP_HOST: 'supabase-mail',
+      SMTP_PORT: '2500',
+      SMTP_USER: 'fake_mail_user',
+      SMTP_PASS: 'fake_mail_password',
+      SMTP_SENDER_NAME: 'fake_sender',
+      ENABLE_ANONYMOUS_USERS: 'false',
+      
+      // Phone auth
+      ENABLE_PHONE_SIGNUP: 'true',
+      ENABLE_PHONE_AUTOCONFIRM: 'true',
+      
+      // Studio
+      STUDIO_DEFAULT_ORGANIZATION: 'Default Organization',
+      STUDIO_DEFAULT_PROJECT: 'Default Project',
+      STUDIO_PORT: (basePort + 100).toString(),
+      SUPABASE_PUBLIC_URL: `http://localhost:${basePort}`,
+      
+      // ImgProxy
+      IMGPROXY_ENABLE_WEBP_DETECTION: 'true',
+      
+      // OpenAI
+      OPENAI_API_KEY: '',
+      
+      // Functions
+      FUNCTIONS_VERIFY_JWT: 'false',
+      
+      // Logs
+      LOGFLARE_PUBLIC_ACCESS_TOKEN: 'your-super-secret-and-long-logflare-key-public',
+      LOGFLARE_PRIVATE_ACCESS_TOKEN: 'your-super-secret-and-long-logflare-key-private',
+      DOCKER_SOCKET_LOCATION: '/var/run/docker.sock',
+      
+      // Google Cloud
+      GOOGLE_PROJECT_ID: 'GOOGLE_PROJECT_ID',
+      GOOGLE_PROJECT_NUMBER: 'GOOGLE_PROJECT_NUMBER'
+    }
   })
   const [loading, setLoading] = useState(false)
   const [deploying, setDeploying] = useState(false)
@@ -156,9 +161,22 @@ export default function ConfigureProjectPage({ params }: ConfigureProjectPagePro
   const handleGenerateSecrets = () => {
     const jwtSecret = generateSecureKey(64)
     const projectId = `project-${Date.now()}`
+    const timestamp = Date.now()
+    const basePort = 8000 + (timestamp % 10000)
     
     setEnvVars(prev => ({
       ...prev,
+      // Generate new ports to avoid conflicts
+      POSTGRES_PORT: (basePort + 2000).toString(),
+      POOLER_PROXY_PORT_TRANSACTION: (basePort + 3000).toString(),
+      KONG_HTTP_PORT: basePort.toString(),
+      KONG_HTTPS_PORT: (basePort + 443).toString(),
+      ANALYTICS_PORT: (basePort + 1000).toString(),
+      STUDIO_PORT: (basePort + 100).toString(),
+      API_EXTERNAL_URL: `http://localhost:${basePort}`,
+      SUPABASE_PUBLIC_URL: `http://localhost:${basePort}`,
+      SITE_URL: `http://localhost:${basePort + 100}`,
+
       POSTGRES_PASSWORD: generateSecureKey(32),
       JWT_SECRET: jwtSecret,
       ANON_KEY: `eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.${btoa(JSON.stringify({
