@@ -8,23 +8,15 @@ import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
-import jwt from 'jsonwebtoken'
 
-const generateJWT = (
-  role: 'anon' | 'service_role',
-  jwtSecret: string
-) => {
-  return jwt.sign(
-    {
-      role,
-      iss: 'supabase',
-    },
-    jwtSecret,
-    {
-      algorithm: 'HS256',
-      expiresIn: '1y',
-    }
-  )
+async function generateKeys(jwtSecret: string, projectId: string) {
+  const res = await fetch(`/api/projects/${projectId}/generate-keys`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ jwtSecret }),
+  })
+
+  return res.json()
 }
 
 interface ConfigureProjectPageProps {
@@ -181,6 +173,8 @@ export default function ConfigureProjectPage({ params }: ConfigureProjectPagePro
     const projectId = `project-${Date.now()}`
     const timestamp = Date.now()
     const basePort = 8000 + (timestamp % 10000)
+
+    const { anonKey, serviceKey } = await generateKeys(env.JWT_SECRET, params.id)
     
     setEnvVars(prev => ({
       ...prev,
@@ -197,8 +191,8 @@ export default function ConfigureProjectPage({ params }: ConfigureProjectPagePro
 
       POSTGRES_PASSWORD: generateSecureKey(32),
       JWT_SECRET: jwtSecret,
-      ANON_KEY: generateJWT('anon', jwtSecret),
-      SERVICE_ROLE_KEY: generateJWT('service_role', jwtSecret),
+      ANON_KEY: anonKey,
+      SERVICE_ROLE_KEY: serviceKey,
       DASHBOARD_PASSWORD: generateSecureKey(16),
       SECRET_KEY_BASE: generateSecureKey(64),
       VAULT_ENC_KEY: generateSecureKey(32),
