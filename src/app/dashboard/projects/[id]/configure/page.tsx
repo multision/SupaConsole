@@ -8,6 +8,24 @@ import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
+import jwt from 'jsonwebtoken'
+
+const generateJWT = (
+  role: 'anon' | 'service_role',
+  jwtSecret: string
+) => {
+  return jwt.sign(
+    {
+      role,
+      iss: 'supabase',
+    },
+    jwtSecret,
+    {
+      algorithm: 'HS256',
+      expiresIn: '1y',
+    }
+  )
+}
 
 interface ConfigureProjectPageProps {
   params: Promise<{
@@ -159,7 +177,7 @@ export default function ConfigureProjectPage({ params }: ConfigureProjectPagePro
   }
 
   const handleGenerateSecrets = () => {
-    const jwtSecret = generateSecureKey(64)
+    const jwtSecret = generateSecureKey(40)
     const projectId = `project-${Date.now()}`
     const timestamp = Date.now()
     const basePort = 8000 + (timestamp % 10000)
@@ -179,18 +197,8 @@ export default function ConfigureProjectPage({ params }: ConfigureProjectPagePro
 
       POSTGRES_PASSWORD: generateSecureKey(32),
       JWT_SECRET: jwtSecret,
-      ANON_KEY: `eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.${btoa(JSON.stringify({
-        role: 'anon',
-        iss: 'supabase',
-        iat: Math.floor(Date.now() / 1000),
-        exp: Math.floor(Date.now() / 1000) + (365 * 24 * 60 * 60) // 1 year
-      }))}.${generateSecureKey(43)}`,
-      SERVICE_ROLE_KEY: `eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.${btoa(JSON.stringify({
-        role: 'service_role',
-        iss: 'supabase',
-        iat: Math.floor(Date.now() / 1000),
-        exp: Math.floor(Date.now() / 1000) + (365 * 24 * 60 * 60) // 1 year
-      }))}.${generateSecureKey(43)}`,
+      ANON_KEY: generateJWT('anon', jwtSecret),
+      SERVICE_ROLE_KEY: generateJWT('service_role', jwtSecret),
       DASHBOARD_PASSWORD: generateSecureKey(16),
       SECRET_KEY_BASE: generateSecureKey(64),
       VAULT_ENC_KEY: generateSecureKey(32),
