@@ -168,13 +168,15 @@ export default function ConfigureProjectPage({ params }: ConfigureProjectPagePro
     return result
   }
 
-  const handleGenerateSecrets = () => {
+  const handleGenerateSecrets = async () => {
     const jwtSecret = generateSecureKey(40)
     const projectId = `project-${Date.now()}`
     const timestamp = Date.now()
     const basePort = 8000 + (timestamp % 10000)
 
-    const { anonKey, serviceKey } = await generateKeys(env.JWT_SECRET, params.id)
+    if (!projectId) return
+
+    const { anonKey, serviceKey } = await generateKeys(JWT_SECRET, projectId)
     
     setEnvVars(prev => ({
       ...prev,
