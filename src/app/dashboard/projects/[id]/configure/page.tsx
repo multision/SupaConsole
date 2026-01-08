@@ -176,7 +176,7 @@ export default function ConfigureProjectPage({ params }: ConfigureProjectPagePro
 
     if (!projectId) return
 
-    const { anonKey, serviceKey } = await generateKeys(JWT_SECRET, projectId)
+    const { anonKey, serviceKey } = await generateKeys(jwtSecret, projectId)
     
     setEnvVars(prev => ({
       ...prev,
